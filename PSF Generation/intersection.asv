@@ -1,0 +1,38 @@
+% Define the values
+x0 = 0;
+y0 = 0;
+z0 = 0;
+X = 1;
+Y = 0;
+Z = 0;
+c = 2;
+
+% Call the function to compute the intersection point
+[x_c2, y_c2, z_intersect] = computeIntersectionPoint(x0, y0, z0, X, Y, Z, c);
+
+% Define the function
+function [x_c2, y_c2 z_intersect] = computeIntersectionPoint(x0, y0, z0, X, Y, Z, c)
+    % Define the surface equation
+    syms x y z t;
+    p = sqrt(x^2 + y^2);
+    f = c*p^2 / (1 + sqrt(1 - c^2*p^2));
+
+    % Define the ray equation
+    ray_eq_x = x0 + t*X;
+    ray_eq_y = y0 + t*Y;
+    ray_eq_z = z0 + t*Z;
+
+    % Solve for the intersection point
+    [x_c2, y_c2, z_intersect, t_val] = solve([subs(ray_eq_x, x, x0) - x, subs(ray_eq_y, y, y0) - y, subs(ray_eq_z, z, z0) - z, z - f], [x, y, z, t]);
+
+    % Check if solutions are valid
+    valid_solution_idx = find(double(t_val) >= 0);
+    if isempty(valid_solution_idx)
+        error('No valid intersection point found within the ray marching distance');
+    end
+
+    % Extract the intersection point coordinates
+    x_c2 = double(x_c2(valid_solution_idx(1)));
+    y_c2 = double(y_intersect(valid_solution_idx(1)));
+    z_intersect = double(z_intersect(valid_solution_idx(1)));
+end
